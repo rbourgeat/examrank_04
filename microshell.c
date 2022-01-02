@@ -1,4 +1,4 @@
-#include <stdio.h> //delete
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -15,9 +15,9 @@ typedef struct s_base
 {
     char **argv;
     int size;
-	int type;
-	int fd[2];
-	struct s_base *prev;
+    int type;
+    int fd[2];
+    struct s_base *prev;
     struct s_base *next;
 } t_base;
 
@@ -77,7 +77,7 @@ int exit_cd_2(char *str)
 
 void ft_lstadd_back(t_base **ptr, t_base *new)
 {
-    t_base *temp;
+	t_base *temp;
 
 	if (!(*ptr))
 		*ptr = new;
@@ -93,10 +93,10 @@ void ft_lstadd_back(t_base **ptr, t_base *new)
 
 int size_argv(char **argv)
 {
-    int i = 0;
-    while (argv[i] && strcmp(argv[i], "|") != 0 && strcmp(argv[i], ";") != 0)
-        i++;
-    return (i);
+	int i = 0;
+	while (argv[i] && strcmp(argv[i], "|") != 0 && strcmp(argv[i], ";") != 0)
+		i++;
+	return (i);
 }
 
 int check_end(char *av)
@@ -229,7 +229,6 @@ int main(int ac, char **av, char **env)
     	    else
     	        i++;
     	}
-
 		if (ptr)
 			exec_cmds(ptr, env);
 		free_all(ptr);
