@@ -13,12 +13,12 @@
 
 typedef struct s_base
 {
-    char **argv;
-    int size;
-    int type;
-    int fd[2];
-    struct s_base *prev;
-    struct s_base *next;
+	char **argv;
+	int size;
+	int type;
+	int fd[2];
+	struct s_base *prev;
+	struct s_base *next;
 } t_base;
 
 int ft_strlen(char *str)
@@ -26,7 +26,7 @@ int ft_strlen(char *str)
 	int i = 0;
 
 	if (!str)
-		return (0);
+		return (i);
 	while (str[i])
 		i++;
 	return (i);
@@ -47,7 +47,7 @@ char *ft_strdup(char *str)
 	return (new);
 }
 
-void exit_fatal(void)
+void exit_fatal()
 {
 	write(STDERR, "error: fatal\n", ft_strlen("error: fatal\n"));
 	exit(EXIT_FAILURE);
@@ -77,17 +77,17 @@ int exit_cd_2(char *str)
 
 void ft_lstadd_back(t_base **ptr, t_base *new)
 {
-	t_base *temp;
+	t_base *tmp;
 
 	if (!(*ptr))
 		*ptr = new;
 	else
 	{
-		temp = *ptr;
-		while (temp->next)
-			temp = temp->next;
-		temp->next = new;
-		new->prev = temp;
+		tmp = *ptr;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = new;
+		new->prev = tmp;
 	}
 }
 
@@ -110,33 +110,32 @@ int check_end(char *av)
     return (0);
 }
 
-int parser_argv(t_base **ptr, char **av)
+int parser_argv(t_base **ptr, char **argv)
 {
-    int size = size_argv(av);
-    t_base *new;
+	int size = size_argv(argv);
+	t_base *new;
 
-    if (!(new = (t_base *)malloc(sizeof(t_base))))
-        exit_fatal();
-    if (!(new->argv = (char **)malloc(sizeof(char *) * (size + 1))))
-        exit_fatal();
-    new->size = size;
+	if (!(new = (t_base *)malloc(sizeof(t_base))))
+        	exit_fatal();
+	if (!(new->argv = (char **)malloc(sizeof(char *) * (size + 1))))
+        	exit_fatal();
+	new->size = size;
 	new->next = NULL;
 	new->prev = NULL;
-    new->argv[size] = NULL;
-    while (--size >= 0)
-        new->argv[size] = ft_strdup(av[size]);
-    new->type = check_end(av[new->size]);
-    ft_lstadd_back(ptr, new);
-    return (new->size);
+	new->argv[size] = NULL;
+	while (--size >= 0)
+		new->argv[size] = ft_strdup(argv[size]);
+	new->type = check_end(argv[new->size]);
+	ft_lstadd_back(ptr, new);
+	return (new->size);
 }
 
 void exec_cmd(t_base *temp, char **env)
 {
 	pid_t pid;
 	int status;
-	int pipe_open;
+	int pipe_open = 0;
 
-	pipe_open = 0;
 	if (temp->type == TYPE_PIPE || (temp->prev && temp->prev->type == TYPE_PIPE))
 	{
 		pipe_open = 1;
@@ -208,27 +207,26 @@ void free_all(t_base *ptr)
 	ptr = NULL;
 }
 
-int main(int ac, char **av, char **env)
+int main(int argc, char **argv, char **env)
 {
 	t_base *ptr = NULL;
-	int i;
+	int i = 1;
 
-	i = 1;
-	if (ac > 1)
+	if (argc > 1)
 	{
-		while (av[i])
-    	{
-            if (strcmp(av[i], ";") == 0)
-            {
-                i++;
-                continue ;
-            }
-    	    i += parser_argv(&ptr, &av[i]);
-    	    if (!av[i])
-    	        break;
-    	    else
-    	        i++;
-    	}
+		while (argv[i])
+		{
+			if (strcmp(argv[i], ";") == 0)
+			{
+				i++;
+				continue ;
+			}
+			i += parser_argv(&ptr, &argv[i]);
+			if (!argv[i])
+				break;
+			else
+				i++;
+		}
 		if (ptr)
 			exec_cmds(ptr, env);
 		free_all(ptr);
